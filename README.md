@@ -50,12 +50,12 @@ python space/publish.py
 3. On the Space settings, leave the hardware on the free CPU.
 4. Wait until the Space build is green. The first question after it sleeps can take about a minute.
 
-The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That address is in `site/config.js`.
+The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That address is in `config.js`.
 
 ## Preview the page on your laptop
 
 ```bash
-python3 -m http.server 8080 -d site
+python3 -m http.server 8080
 ```
 
-Open http://localhost:8080. The live site updates on its own when you push to `main`.
+Open http://localhost:8080. Pushing to `main` publishes the same files to https://akshay-anand010.github.io. GitHub Pages serves this repository from the main branch. The page is the files at the root (`index.html`, `css`, `js`). The notes, the notebook, and the API code stay in the repo and are not a separate server.
