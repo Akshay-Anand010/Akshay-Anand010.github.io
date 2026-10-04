@@ -50,11 +50,11 @@ python space/publish.py
 3. On the Space settings, leave the hardware on the free CPU.
 4. Wait until the Space build is green. The first question after it sleeps can take about a minute.
 
-The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That address is in `config.js`.
+The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That address is in `web/src/config.js`.
 
 ## Preview the page on your laptop
 
-The page source is the React app in `web/`. GitHub Pages serves the built files in `docs/`.
+The page source is the React app in `web/`. `npm run build` writes `docs/`. This user site is published from the repository root, so the same built files are copied there before a push.
 
 ```bash
 cd web
@@ -63,4 +63,4 @@ npm run build
 python3 -m http.server 8080 -d ../docs
 ```
 
-Open http://localhost:8080. Home is the person. Work (`#work`) is the career record. Life (`#life`) is everything else. Pushing `main` publishes `docs/` once Pages is set to that folder.
+Open http://localhost:8080. Home is the person. Work (`#work`) is the career record. Life (`#life`) is everything else.

@@ -6,107 +6,19 @@
     <title>Akshay Anand</title>
     <meta
       name="description"
-      content="Akshay Anand, Senior Software Engineer at Visa in Bengaluru. Selected work, and Akshay GPT for questions about him."
+      content="Akshay Anand, software engineer in Bengaluru. Systems, AI, and the things he builds and explores."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="module" crossorigin src="/assets/index-BEQbwKIl.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-7uHHNqk8.css">
   </head>
   <body>
-    <div class="wrap">
-      <header class="top">
-        <a class="brand" href="./">Akshay Anand</a>
-        <p class="place">Bengaluru</p>
-        <button class="ask-launch" id="open-ask" type="button">
-          <span class="mark" aria-hidden="true">A</span>
-          Akshay GPT
-        </button>
-      </header>
-
-      <main>
-        <section class="hero">
-          <p class="kicker">Visa · Bengaluru</p>
-          <h1>Software, studied in public.</h1>
-          <p class="lede">
-            I am a Senior Software Engineer at Visa, working on security and identity.
-            Before that, Thoughtworks and Manhattan Associates. Ask Akshay GPT about the work,
-            the study, or the rest of the notes.
-          </p>
-        </section>
-
-        <section class="work" aria-labelledby="work-title">
-          <h2 id="work-title">Selected work</h2>
-          <p class="section-note">Public projects. The same facts are in the notes the model reads.</p>
-
-          <a class="project" href="https://akshay-anand010.github.io/ml-visual-lab/">
-            <span class="index">01</span>
-            <span>
-              <h3>ML Visual Lab</h3>
-              <p>Interactive explanations of classical machine learning and deep learning.</p>
-            </span>
-            <span class="arrow">↗</span>
-          </a>
-
-          <a class="project" href="https://github.com/Akshay-Anand010/AIML-IIITH-2026">
-            <span class="index">02</span>
-            <span>
-              <h3>AIML notes</h3>
-              <p>Topic-wise notes for the AIML course, kept in a public repository.</p>
-            </span>
-            <span class="arrow">↗</span>
-          </a>
-
-          <a class="project" href="https://github.com/Akshay-Anand010/VirtualTouristGuide_SIH2020">
-            <span class="index">03</span>
-            <span>
-              <h3>Virtual Tourist Guide</h3>
-              <p>A Smart India Hackathon 2020 app that described monuments from photos.</p>
-            </span>
-            <span class="arrow">↗</span>
-          </a>
-
-          <a class="project" href="https://github.com/Akshay-Anand010/microservices-using-flask">
-            <span class="index">04</span>
-            <span>
-              <h3>Flask streaming</h3>
-              <p>Live video streaming built as Flask microservices.</p>
-            </span>
-            <span class="arrow">↗</span>
-          </a>
-        </section>
-      </main>
-
-      <footer class="foot">
-        <span>Press / to ask.</span>
-        <a href="https://github.com/Akshay-Anand010">GitHub</a>
-      </footer>
-    </div>
-
-    <dialog id="ask" aria-labelledby="ask-title">
-      <div class="ask-panel">
-        <div class="ask-head">
-          <p id="ask-title">Akshay GPT</p>
-          <form method="dialog">
-            <button class="close" type="submit">Close</button>
-          </form>
-        </div>
-        <form id="ask-form">
-          <input id="question" name="question" type="text" placeholder="Ask about the work" autocomplete="off" />
-          <button type="submit">Ask</button>
-        </form>
-        <div class="chips" id="suggestions"></div>
-        <p id="aside"></p>
-        <p id="answer"></p>
-        <div id="sources"></div>
-        <p id="source"></p>
-      </div>
-    </dialog>
-
-    <script type="module" src="js/ask.js"></script>
+    <div id="root"></div>
   </body>
 </html>
