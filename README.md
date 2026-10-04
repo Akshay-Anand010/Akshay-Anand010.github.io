@@ -54,8 +54,13 @@ The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That a
 
 ## Preview the page on your laptop
 
+The page source is the React app in `web/`. GitHub Pages serves the built files in `docs/`.
+
 ```bash
-python3 -m http.server 8080
+cd web
+npm install
+npm run build
+python3 -m http.server 8080 -d ../docs
 ```
 
-Open http://localhost:8080. Pushing to `main` publishes the same files to https://akshay-anand010.github.io. GitHub Pages serves this repository from the main branch. The page is the files at the root (`index.html`, `css`, `js`). The notes, the notebook, and the API code stay in the repo and are not a separate server.
+Open http://localhost:8080. Home is the person. Work (`#work`) is the career record. Life (`#life`) is everything else. Pushing `main` publishes `docs/` once Pages is set to that folder.

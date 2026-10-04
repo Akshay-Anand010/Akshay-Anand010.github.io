@@ -84,9 +84,9 @@ The answer for each question is the note it is listed under, not a separate answ
 - Who is Akshay Anand?
 - What does Akshay do?
 - What is Akshay's current status?
-- Where does Akshay work now?
 - Where does Akshay live?
 - What languages does Akshay speak?
+- Is Akshay an engineer?
 - Tell me about Who Akshay is.
 - What is Who Akshay is?
 - What should I know about Akshay's profile on Who Akshay is?
