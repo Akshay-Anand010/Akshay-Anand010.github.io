@@ -4,7 +4,7 @@ section: Personal
 public: true
 ---
 
-Akshay's birthplace is Patna, Bihar. His mother's name is Sarita Kumar. His father's name is Naulis Kumar.
+Akshay's birthplace is Patna, Bihar. He was born in Patna. His mother's name is Sarita Kumar. His father's name is Naulis Kumar.
 
 ## Questions
 - Where was Akshay born?

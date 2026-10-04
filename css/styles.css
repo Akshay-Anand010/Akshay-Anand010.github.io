@@ -164,6 +164,8 @@ h1 {
 
 dialog {
   width: min(640px, calc(100% - 1.5rem));
+  max-height: min(80vh, 720px);
+  overflow: auto;
   border: 0;
   border-radius: 1.25rem;
   padding: 0;
@@ -236,15 +238,35 @@ form button:disabled { opacity: 0.6; cursor: wait; }
 
 .chip:hover { color: var(--ink); border-color: var(--ink); }
 
+#aside {
+  margin: 1rem 0 0;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
 #answer {
   min-height: 4.5rem;
-  margin: 1.1rem 0 0.3rem;
+  margin: 0.7rem 0 0.3rem;
   font-family: "Newsreader", serif;
   font-size: 1.35rem;
   line-height: 1.35;
+  white-space: pre-wrap;
 }
 
-#source { margin: 0; color: var(--muted); font-size: 0.85rem; }
+#sources { display: grid; gap: 0.55rem; margin-top: 0.8rem; }
+
+#sources a {
+  display: block;
+  text-decoration: none;
+  border-top: 1px solid var(--line);
+  padding-top: 0.45rem;
+}
+
+#sources strong { display: block; font-size: 0.95rem; }
+
+#sources span { display: block; color: var(--muted); font-size: 0.85rem; }
+
+#source { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.85rem; }
 
 @media (max-width: 700px) {
   .top { align-items: flex-start; }

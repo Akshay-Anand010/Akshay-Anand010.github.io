@@ -6,11 +6,13 @@ types a question on https://akshay-anand010.github.io, the page sends
 that question to POST /ask, and this file replies.
 
 What this process does on each question
-1. Load your notes (the same public notes the Colab notebook trains on).
-2. Pick the note that shares the most words with the question.
-3. If nothing matches, say so. The model is not asked to guess.
-4. Otherwise load the public base model, attach the adapter you trained
-   in Colab, and generate a reply from that note.
+1. Decide if the question is about Akshay, using space/route.py.
+2. If a note matches, answer from that note with the adapted model.
+3. If it is about him and no note matches, say so. Do not guess.
+4. If it is a general question, say that this model was not built for that,
+   draft a short answer when the base model is loaded, and use the
+   LangChain search tool in space/web_search.py to show public results
+   plus a link that opens the same search in a browser.
 
 The original model weights stay frozen. The adapter is the only piece
 that was trained, and it was trained on the last 4 blocks plus the
@@ -20,7 +22,6 @@ final output layer.
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import torch
@@ -28,6 +29,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+import route
+import web_search
 
 # The public model Colab starts from. The Space downloads this itself.
 BASE_MODEL = "HuggingFaceTB/SmolLM2-360M-Instruct"
@@ -39,14 +43,14 @@ NOTES_URL = (
     "akshay-anand010.github.io/main/data/notes.json"
 )
 
-# Words that appear in almost every question. Counting them would make
-# unrelated notes look like a match.
-STOPWORDS = {
-    "a", "an", "the", "is", "are", "was", "were", "what", "who", "where",
-    "when", "why", "how", "do", "does", "did", "you", "your", "about",
-    "tell", "me", "of", "to", "in", "on", "for", "and", "or", "akshay",
-    "please", "can", "could", "should", "i", "know",
-}
+# Said before any answer that is not about Akshay. The page shows this
+# on its own line so it does not get mixed into the actual answer.
+OFF_TOPIC_LINE = (
+    "Yeah, I can give you an answer, but it was not intended for this. "
+    "This model is only for production."
+)
+
+UNKNOWN_LINE = "I don't have that in the notes on Akshay, so I won't guess."
 
 # The page is allowed to call this API from the live site and from a
 # local preview. Other websites are rejected by the browser.
@@ -65,19 +69,16 @@ app.add_middleware(
 )
 
 # Filled on the first question so the Space can boot without the model.
+# _adapter_on is false when the Colab upload is missing. The base model
+# can still draft a general answer. It must not invent Akshay's life.
 _tokenizer = None
 _model = None
 _load_error = None
+_adapter_on = False
 
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=500)
-
-
-def words(text: str) -> set[str]:
-    """Lowercase words, with the question-glue words removed."""
-    found = set(re.findall(r"[a-z0-9]+", text.lower()))
-    return found - STOPWORDS
 
 
 def load_notes() -> dict:
@@ -96,34 +97,20 @@ def load_notes() -> dict:
     return local
 
 
-def best_note(question: str, notes: list[dict]) -> dict | None:
-    """The note with the largest word overlap with the question."""
-    asked = words(question)
-    if not asked:
-        return None
-    winner = None
-    winner_score = 0
-    for note in notes:
-        haystack = words(f"{note['title']} {note['section']} {note['body']}")
-        score = len(asked & haystack)
-        if score > winner_score:
-            winner = note
-            winner_score = score
-    return winner
-
-
 def user_message(title: str, body: str, question: str) -> str:
     """Must stay identical to data/build_examples.py user_message."""
     return f"Note:\n{title}\n{body}\n\nQuestion:\n{question}\n"
 
 
 def get_model():
-    """Load the base model and the Colab adapter once per process.
+    """Load the base model once, then attach the Colab adapter if it exists.
 
     A free Space sleeps when nobody is asking. The first question after
     a sleep pays the download cost. Later questions reuse this pair.
+    If the adapter was never uploaded, the base model stays available for
+    general questions only.
     """
-    global _tokenizer, _model, _load_error
+    global _tokenizer, _model, _load_error, _adapter_on
     if _model is not None or _load_error is not None:
         return _tokenizer, _model
 
@@ -134,41 +121,105 @@ def get_model():
         if _tokenizer.pad_token is None:
             _tokenizer.pad_token = _tokenizer.eos_token
         base = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.float32)
-        _model = PeftModel.from_pretrained(base, ADAPTER)
+        try:
+            _model = PeftModel.from_pretrained(base, ADAPTER)
+            _adapter_on = True
+        except Exception:
+            _model = base
+            _adapter_on = False
         _model.eval()
     except Exception as exc:
         _load_error = str(exc)
     return _tokenizer, _model
 
 
-def generate(system_prompt: str, note: dict, question: str) -> str:
-    """Ask the adapted model to answer from one note."""
+def complete(messages: list[dict], limit: int) -> str:
+    """Turn a chat into the model's new text. Shared by both answer paths."""
     tokenizer, model = get_model()
     if model is None:
         raise RuntimeError(_load_error or "model failed to load")
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_message(note["title"], note["body"], question)},
-    ]
     encoded = tokenizer.apply_chat_template(
         messages,
         tokenize=True,
         add_generation_prompt=True,
         return_tensors="pt",
     )
-    # Newer transformers return a dict with input_ids. Older ones return a tensor.
     input_ids = encoded["input_ids"] if hasattr(encoded, "keys") else encoded
     with torch.no_grad():
         output = model.generate(
             input_ids=input_ids,
-            max_new_tokens=180,
+            max_new_tokens=limit,
             do_sample=False,
             pad_token_id=tokenizer.pad_token_id,
         )
     new_tokens = output[0][input_ids.shape[-1] :]
-    text = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+    return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+
+def generate(system_prompt: str, note: dict, question: str) -> str:
+    """Ask the adapted model to answer from one note.
+
+    Without the adapter, return the note itself. The base model has never
+    been trained on these facts and would invent them.
+    """
+    if not _adapter_on:
+        get_model()
+    if not _adapter_on:
+        return note["body"]
+
+    text = complete(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message(note["title"], note["body"], question)},
+        ],
+        limit=180,
+    )
     return text or note["body"]
+
+
+def draft_general(question: str) -> str:
+    """A short answer for a question that is not about Akshay.
+
+    The adapter is turned off for this call so the reply is not a life note.
+    If the model never loaded, the search results still stand on their own.
+    """
+    _tokenizer, model = get_model()
+    if model is None:
+        return ""
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "Answer the question in a few sentences or a short code block. "
+                "Do not mention Akshay and do not invent a biography."
+            ),
+        },
+        {"role": "user", "content": question},
+    ]
+    try:
+        if _adapter_on and hasattr(model, "disable_adapter"):
+            with model.disable_adapter():
+                return complete(messages, limit=160)
+        return complete(messages, limit=160)
+    except Exception:
+        return ""
+
+
+def general_reply(question: str) -> dict:
+    """Off-topic question: a warning line, a draft, and public search hits."""
+    draft = draft_general(question)
+    sources = web_search.search(question)
+    answer = draft or "Here is what a web search returned."
+    return {
+        "kind": "general",
+        "aside": OFF_TOPIC_LINE,
+        "answer": answer,
+        "title": None,
+        "section": None,
+        "sources": sources,
+        "search_url": web_search.browser_url(question),
+    }
 
 
 @app.get("/")
@@ -180,26 +231,44 @@ def health():
 @app.post("/ask")
 def ask(body: AskRequest):
     """The only endpoint the website calls."""
+    question = body.question.strip()
     bundle = load_notes()
-    note = best_note(body.question, bundle["notes"])
-    if note is None:
+    kind, note = route.classify(question, bundle["notes"])
+
+    if kind == "unknown":
         return {
-            "answer": "I don't have that in Akshay's notes yet.",
+            "kind": "unknown",
+            "aside": "",
+            "answer": UNKNOWN_LINE,
             "title": None,
             "section": None,
+            "sources": [],
+            "search_url": "",
         }
 
+    if kind == "general":
+        return general_reply(question)
+
     try:
-        answer = generate(bundle["system_prompt"], note, body.question.strip())
+        answer = generate(bundle["system_prompt"], note, question)
     except Exception as exc:
         return {
-            "answer": (
-                "The personal model is not available yet. "
-                "Run the Colab notebook so the adapter is on Hugging Face, then ask again."
-            ),
+            "kind": "about",
+            "aside": "",
+            "answer": note["body"],
             "title": note["title"],
             "section": note["section"],
+            "sources": [],
+            "search_url": "",
             "error": str(exc),
         }
 
-    return {"answer": answer, "title": note["title"], "section": note["section"]}
+    return {
+        "kind": "about",
+        "aside": "",
+        "answer": answer,
+        "title": note["title"],
+        "section": note["section"],
+        "sources": [],
+        "search_url": "",
+    }

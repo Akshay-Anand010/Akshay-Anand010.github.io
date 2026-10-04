@@ -4,7 +4,7 @@ section: Personal
 public: true
 ---
 
-Akshay does not have a girlfriend. On marriage: fingers crossed, hopefully very soon :)
+Akshay does not have a girlfriend. He is not married. On marriage: fingers crossed, hopefully very soon :)
 
 ## Questions
 - Does Akshay have a girlfriend?

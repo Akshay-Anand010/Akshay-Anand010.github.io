@@ -6,3 +6,6 @@ accelerate>=1.0.0
 fastapi
 uvicorn
 pydantic
+langchain>=0.3.0
+langchain-community>=0.3.0
+ddgs>=9.0.0

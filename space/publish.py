@@ -15,7 +15,7 @@ from pathlib import Path
 from huggingface_hub import HfApi
 
 SPACE_ID = "Akshay-Anand010/akshay-gpt"
-FILES = ["app.py", "requirements.txt", "Dockerfile", "README.md", "notes.json"]
+FILES = ["app.py", "route.py", "web_search.py", "requirements.txt", "Dockerfile", "README.md", "notes.json"]
 
 
 def main() -> None:
