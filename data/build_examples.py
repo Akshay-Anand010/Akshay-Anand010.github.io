@@ -7,12 +7,13 @@ laptop, and the Colab notebook runs it again before training, so the
 notebook always sees the latest notes.
 
 What it writes
-- data/train.jsonl: one training example per line. Each example is a
-  short conversation: system rules, a user message that contains a note
-  plus a question, and an assistant reply that is the note itself.
-- data/notes.json: the same notes, for the Hugging Face API. The API
-  picks a note, then asks the model to answer from it. Training uses
-  that same shape, so the model practices the job it will actually do.
+- data/train.jsonl: one training example per line. This is the file
+  the Colab notebook trains on. Each line is a question plus the note
+  that answers it.
+- data/questions.md: the same questions, in a list you can read.
+  Edit the notes, not this file. Each note can end with a
+  "## Questions" list. Those lines are questions, not part of the answer.
+- data/notes.json: the notes, for the Hugging Face API.
 
 A note is used only when its header says public: true. That keeps a
 private draft from becoming training data or an API answer.
@@ -28,6 +29,7 @@ LIFE_DIR = ROOT / "data" / "life"
 SYSTEM_PROMPT_PATH = ROOT / "data" / "system_prompt.txt"
 TRAIN_PATH = ROOT / "data" / "train.jsonl"
 NOTES_PATH = ROOT / "data" / "notes.json"
+QUESTIONS_PATH = ROOT / "data" / "questions.md"
 # The Space uploads this copy so it can answer even before it fetches GitHub.
 SPACE_NOTES_PATH = ROOT / "space" / "notes.json"
 
@@ -51,10 +53,20 @@ def read_note(path: Path) -> dict | None:
     if fields.get("public", "").lower() != "true":
         return None
 
+    # Lines under "## Questions" are how a visitor might ask.
+    # They are not part of the answer the model learns to say.
+    answer, _, question_block = body.partition("## Questions")
+    questions = []
+    for line in question_block.splitlines():
+        line = line.strip()
+        if line.startswith("- "):
+            questions.append(line[2:].strip())
+
     return {
         "title": fields["title"],
         "section": fields["section"],
-        "body": body.strip(),
+        "body": answer.strip(),
+        "questions": questions,
         "source": path.name,
     }
 
@@ -77,11 +89,18 @@ def questions_for(note: dict) -> list[str]:
     """
     title = note["title"]
     section = note["section"]
-    return [
+    generic = [
         f"Tell me about {title}.",
         f"What is {title}?",
         f"What should I know about Akshay's {section.lower()} on {title}?",
     ]
+    seen = set()
+    ordered = []
+    for question in note.get("questions", []) + generic:
+        if question not in seen:
+            seen.add(question)
+            ordered.append(question)
+    return ordered
 
 
 def build_example(system_prompt: str, note: dict, question: str) -> dict:
@@ -126,11 +145,47 @@ def main() -> None:
     SPACE_NOTES_PATH.parent.mkdir(parents=True, exist_ok=True)
     SPACE_NOTES_PATH.write_text(encoded, encoding="utf-8")
 
+    # A readable copy of every training question, plus a few the notes
+    # still do not answer. Edit data/life, then run this script again.
+    still_open = [
+        "What is Akshay's date of birth?",
+        "Does Akshay have siblings?",
+        "What food does Akshay like?",
+        "Does Akshay smoke?",
+        "What is Akshay's chess rating, or how often does he play?",
+        "Which other cities has Akshay traveled to?",
+        "Should the public site share a phone number or email? They were left out on purpose.",
+    ]
+    lines = [
+        "# Questions for fine-tuning",
+        "",
+        "This file is generated. Do not edit it by hand.",
+        "Change a note in `data/life/`, then run `python3 data/build_examples.py`.",
+        "The Colab notebook trains on `data/train.jsonl`, which is built from the questions below.",
+        "The answer for each question is the note it is listed under, not a separate answer key.",
+        "",
+        "## Answered by the notes",
+        "",
+    ]
+    for note in notes:
+        lines.append(f"### {note['source']} — {note['title']}")
+        lines.append("")
+        for question in questions_for(note):
+            lines.append(f"- {question}")
+        lines.append("")
+    lines.append("## Still need an answer from Akshay")
+    lines.append("")
+    for question in still_open:
+        lines.append(f"- {question}")
+    lines.append("")
+    QUESTIONS_PATH.write_text("\n".join(lines), encoding="utf-8")
+
     print(f"notes: {len(notes)}")
     print(f"training examples: {len(examples)}")
     print(f"wrote {TRAIN_PATH.relative_to(ROOT)}")
     print(f"wrote {NOTES_PATH.relative_to(ROOT)}")
     print(f"wrote {SPACE_NOTES_PATH.relative_to(ROOT)}")
+    print(f"wrote {QUESTIONS_PATH.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

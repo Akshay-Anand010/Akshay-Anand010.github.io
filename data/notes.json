@@ -1,29 +1,142 @@
 {
-  "system_prompt": "You answer questions about Akshay Anand, a computer science student in Bengaluru.\nUse only the note in the user message.\nIf the note does not contain the answer, say you do not have that fact.\nDo not invent jobs, degrees, likes, or projects.\nWrite in plain sentences.",
+  "system_prompt": "You answer questions about Akshay Anand, a senior software engineer at Visa in Bengaluru.\nUse only the note in the user message.\nIf the note does not contain the answer, say you do not have that fact.\nDo not invent jobs, degrees, family details, or preferences.\nWrite in plain sentences.\nKeep a playful line as he wrote it when the note is playful.",
   "notes": [
     {
       "title": "AIML notes",
       "section": "Learning",
       "body": "Akshay keeps topic-wise notes for an AIML course in the public repository AIML-IIITH-2026. The repository is https://github.com/Akshay-Anand010/AIML-IIITH-2026. The notes sit beside the ML Visual Lab, which is the visual companion for the same kind of material.",
+      "questions": [],
       "source": "aiml-notes.md"
+    },
+    {
+      "title": "Career",
+      "section": "Work",
+      "body": "Akshay is a Senior Software Engineer at Visa in Bengaluru (November 2025 to present). The domain is security and identity: OAuth 2.0, OpenID Connect, authentication, authorization, and access control. His contributions there include functional and non-functional analysis, scalability and performance engineering, and technical documentation.\n\nBefore Visa he was a Developer at Thoughtworks in Bengaluru (April 2024 to October 2025), on the Purchase Availability team for the John Deere account. He built scalable e-commerce services for global cart, product availability, and promotions. That included a multi-brand universal cart, a promotion engine using Voucherify, the Save For Later feature, Kafka consumers for domain events, and caching that cut database load by about 40 percent. The stack there included Java, Spring Boot, Kafka, Azure API Management, Grafana, and Datadog.\n\nBefore Thoughtworks he was a Software Engineer at Manhattan Associates in Bengaluru (September 2021 to April 2024), on the Manhattan Active Omni order management system. He worked on order creation, allocation, fulfillment, and returns, and integrated PayPal, Cybersource, and Aurus for auth, capture, refund, and reversal. The stack included Java, Spring Boot, microservices, REST, and SQL.\n\nHe was a Software Engineer intern at Infoblox from January 2021 to June 2021, on the IT team, working with Salesforce CRM, a receipt-generation document repository, and an Apex email alert. He was a web development intern at Kavach Networks from May 2020 to August 2020, and a web development intern at Exposys Data Labs from April 2020 to May 2020.\n\nAcross the career he has used Java, Spring Boot, Kafka, RabbitMQ, GCP, AWS, Docker, MySQL, MongoDB, Redis, Grafana, and Datadog. He is strong on high-level and low-level design, domain-driven design, and system design for scale. He uses Claude and Cline day to day for design, debugging, and code review.\n\nHonors on his profile include Smart India Hackathon 2020 finalist, an IEEE hackathon win, and mobile control robotics.",
+      "questions": [
+        "Where does Akshay work?",
+        "What is Akshay's role at Visa?",
+        "What did Akshay do at Thoughtworks?",
+        "What did Akshay do at Manhattan Associates?",
+        "What is Akshay's work experience?",
+        "What is Akshay's tech stack?",
+        "What awards does Akshay have?"
+      ],
+      "source": "career.md"
+    },
+    {
+      "title": "Drinking",
+      "section": "Personal",
+      "body": "Akshay doesn't drink.",
+      "questions": [
+        "Does Akshay drink?",
+        "Does Akshay drink alcohol?"
+      ],
+      "source": "drinking.md"
     },
     {
       "title": "Earlier software projects",
       "section": "Projects",
       "body": "A few earlier public projects on Akshay's GitHub: Virtual Tourist Guide, a Smart India Hackathon 2020 travel app that identified monuments from photos and described them. A live video streaming setup built with Flask microservices. A weather app made with Node.js. An Exposys internship website. A custom app with an AngularJS front end and a Django back end. A React Native housing predictor. These are student and early software projects, not a claim about a current employer.",
+      "questions": [],
       "source": "earlier-projects.md"
+    },
+    {
+      "title": "Education",
+      "section": "Education",
+      "body": "Akshay did a PG in Artificial Intelligence and Machine Learning at the International Institute of Information Technology Hyderabad (IIITH). His profile dates that program to April 2026. He did a Bachelor of Engineering in Computer Science at BNM Institute of Technology, under Visvesvaraya Technological University, from August 2017 to August 2021. He studied at St Joseph's High School in Patna from class 1 to class 12, in science, from 2005 to 2016.\n\nCertifications on his profile include an NQT programming score, AWS Fundamentals: Going Cloud-Native, a JPMorgan Chase virtual experience, an NQT score, and a Java basic certificate.",
+      "questions": [
+        "Where did Akshay study?",
+        "What is Akshay's education?",
+        "Did Akshay study at IIITH?",
+        "Which college did Akshay go to?",
+        "Which school did Akshay go to?"
+      ],
+      "source": "education.md"
+    },
+    {
+      "title": "Family and birthplace",
+      "section": "Personal",
+      "body": "Akshay's birthplace is Patna, Bihar. His mother's name is Sarita Kumar. His father's name is Naulis Kumar.",
+      "questions": [
+        "Where was Akshay born?",
+        "What is Akshay's birthplace?",
+        "What is Akshay's mother's name?",
+        "What is Akshay's father's name?",
+        "Who are Akshay's parents?"
+      ],
+      "source": "family.md"
+    },
+    {
+      "title": "Games",
+      "section": "Personal",
+      "body": "Akshay loves to play chess. He also likes to play volleyball.",
+      "questions": [
+        "What games does Akshay play?",
+        "Does Akshay play chess?",
+        "Does Akshay like volleyball?",
+        "What are Akshay's hobbies?"
+      ],
+      "source": "games.md"
     },
     {
       "title": "ML Visual Lab",
       "section": "Projects",
       "body": "ML Visual Lab is an interactive site of visual explanations for classical machine learning and deep learning. Akshay built it so the ideas can be seen, not only read. The lab includes chapters on linear models, neural nets, CNNs, attention, and related topics. The public site is https://akshay-anand010.github.io/ml-visual-lab/ and the code is https://github.com/Akshay-Anand010/ml-visual-lab.",
+      "questions": [],
       "source": "ml-visual-lab.md"
     },
     {
       "title": "Who Akshay is",
       "section": "Profile",
-      "body": "Akshay Anand is a computer science undergrad based in Bengaluru. Exploring new software has been a long-running interest. His public work lives on GitHub under the name Akshay-Anand010. This site is the public page for that work. Questions about private life, contact details, or preferences that are not written in these notes do not have an answer here.",
+      "body": "Akshay Anand is a Senior Software Engineer at Visa in Bengaluru. He has more than five years in backend engineering and distributed systems. His current work is security and identity: OAuth 2.0, OpenID Connect, authentication, and authorization, on the VAS PD area at Visa, since November 2025. He lives in south Bengaluru. He speaks Hindi and English at full professional level. His public code is on GitHub as Akshay-Anand010. He wants to work on the cutting edge of technology.",
+      "questions": [
+        "Who is Akshay?",
+        "Who is Akshay Anand?",
+        "What does Akshay do?",
+        "What is Akshay's current status?",
+        "Where does Akshay work now?",
+        "Where does Akshay live?",
+        "What languages does Akshay speak?"
+      ],
       "source": "profile.md"
+    },
+    {
+      "title": "Relationship and marriage",
+      "section": "Personal",
+      "body": "Akshay does not have a girlfriend. On marriage: fingers crossed, hopefully very soon :)",
+      "questions": [
+        "Does Akshay have a girlfriend?",
+        "Is Akshay single?",
+        "Is Akshay married?",
+        "What about marriage?",
+        "When will Akshay get married?"
+      ],
+      "source": "relationship.md"
+    },
+    {
+      "title": "Interest in technology",
+      "section": "Interests",
+      "body": "Akshay has a strong interest in technology. The part he cares about most is where machine learning and AI meet architecture: AI for scaling, AI for load prediction, smarter caching, and system-design decisions, not only brute-force scaling. His aim is to work on the cutting edge of technology. He already uses AI-assisted engineering tools such as Claude and Cline for design, debugging, and code review. The ML Visual Lab and his AIML notes are part of that same interest.",
+      "questions": [
+        "What is Akshay interested in?",
+        "What is Akshay's interest in technology?",
+        "What kind of AI work does Akshay want?",
+        "Does Akshay care about machine learning?"
+      ],
+      "source": "technology.md"
+    },
+    {
+      "title": "Travel",
+      "section": "Personal",
+      "body": "Apart from work, Akshay likes to explore. He has been to a lot of places in Kerala, including Munnar. In Karnataka he has been to multiple places, including Coorg. He has also been to Ooty.",
+      "questions": [
+        "Where has Akshay traveled?",
+        "Has Akshay been to Kerala?",
+        "Has Akshay been to Munnar?",
+        "Has Akshay been to Coorg?",
+        "Has Akshay been to Ooty?"
+      ],
+      "source": "travel.md"
     }
   ]
 }
