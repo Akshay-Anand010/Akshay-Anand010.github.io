@@ -1,10 +1,10 @@
 ---
 title: Akshay GPT
-emoji: ✎
+emoji: 💬
 colorFrom: gray
-colorTo: orange
-sdk: docker
-app_port: 7860
+colorTo: green
+sdk: gradio
+sdk_version: 5.49.1
 pinned: false
 ---
 

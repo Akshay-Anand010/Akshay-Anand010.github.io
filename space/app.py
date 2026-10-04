@@ -24,8 +24,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import gradio as gr
 import torch
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -59,14 +59,6 @@ ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
 ]
-
-app = FastAPI(title="Akshay GPT")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type"],
-)
 
 # Filled on the first question so the Space can boot without the model.
 # _adapter_on is false when the Colab upload is missing. The base model
@@ -222,16 +214,8 @@ def general_reply(question: str) -> dict:
     }
 
 
-@app.get("/")
-def health():
-    """Hugging Face checks that the process is up. This does not load the model."""
-    return {"status": "ok", "model": BASE_MODEL, "adapter": ADAPTER}
-
-
-@app.post("/ask")
-def ask(body: AskRequest):
-    """The only endpoint the website calls."""
-    question = body.question.strip()
+def answer_question(question: str) -> dict:
+    """The reply both the website and the Gradio box use."""
     bundle = load_notes()
     kind, note = route.classify(question, bundle["notes"])
 
@@ -272,3 +256,75 @@ def ask(body: AskRequest):
         "sources": [],
         "search_url": "",
     }
+
+
+try:
+    import spaces
+except ImportError:
+    # ZeroGPU Spaces provide this module. Local runs and CPU builds do not.
+    class spaces:  # type: ignore
+        @staticmethod
+        def GPU(duration=1):
+            def decorator(fn):
+                return fn
+            return decorator
+
+
+@spaces.GPU(duration=1)
+def zerogpu_ready():
+    """Lets Hugging Face attach the free ZeroGPU machine.
+
+    Answers themselves stay on CPU. Calling this on every question would
+    spend the visitor's GPU quota for a model this small.
+    """
+    return "ready"
+
+
+def show_in_box(question: str) -> str:
+    """Gradio shows one text box. The website still gets the structured JSON."""
+    payload = answer_question(question.strip())
+    parts = [payload.get("aside") or "", payload.get("answer") or ""]
+    return "\n\n".join(part for part in parts if part)
+
+
+with gr.Blocks(title="Akshay GPT") as demo:
+    gr.Markdown("# Akshay GPT")
+    question_box = gr.Textbox(label="Question", placeholder="Ask about Akshay")
+    answer_box = gr.Textbox(label="Answer", lines=8)
+    ask_button = gr.Button("Ask")
+    ask_button.click(show_in_box, inputs=question_box, outputs=answer_box)
+
+# The with-block above builds demo.app. Routes added here stay only if
+# launch() is given this same app. Hugging Face calls demo.launch(), so
+# the wrapper below hands that app through.
+demo.app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+
+@demo.app.get("/")
+def health():
+    """Hugging Face checks that the process is up. This does not load the model."""
+    return {"status": "ok", "model": BASE_MODEL, "adapter": ADAPTER}
+
+
+@demo.app.post("/ask")
+def ask(body: AskRequest):
+    """The endpoint the website calls."""
+    return answer_question(body.question.strip())
+
+
+_launch = demo.launch
+
+
+def launch(*args, **kwargs):
+    """Keep /ask on the server Gradio starts, and allow the GitHub Pages origin."""
+    kwargs["_app"] = demo.app
+    kwargs["strict_cors"] = False
+    return _launch(*args, **kwargs)
+
+
+demo.launch = launch
