@@ -1,0 +1,29 @@
+{
+  "system_prompt": "You answer questions about Akshay Anand, a computer science student in Bengaluru.\nUse only the note in the user message.\nIf the note does not contain the answer, say you do not have that fact.\nDo not invent jobs, degrees, likes, or projects.\nWrite in plain sentences.",
+  "notes": [
+    {
+      "title": "AIML notes",
+      "section": "Learning",
+      "body": "Akshay keeps topic-wise notes for an AIML course in the public repository AIML-IIITH-2026. The repository is https://github.com/Akshay-Anand010/AIML-IIITH-2026. The notes sit beside the ML Visual Lab, which is the visual companion for the same kind of material.",
+      "source": "aiml-notes.md"
+    },
+    {
+      "title": "Earlier software projects",
+      "section": "Projects",
+      "body": "A few earlier public projects on Akshay's GitHub: Virtual Tourist Guide, a Smart India Hackathon 2020 travel app that identified monuments from photos and described them. A live video streaming setup built with Flask microservices. A weather app made with Node.js. An Exposys internship website. A custom app with an AngularJS front end and a Django back end. A React Native housing predictor. These are student and early software projects, not a claim about a current employer.",
+      "source": "earlier-projects.md"
+    },
+    {
+      "title": "ML Visual Lab",
+      "section": "Projects",
+      "body": "ML Visual Lab is an interactive site of visual explanations for classical machine learning and deep learning. Akshay built it so the ideas can be seen, not only read. The lab includes chapters on linear models, neural nets, CNNs, attention, and related topics. The public site is https://akshay-anand010.github.io/ml-visual-lab/ and the code is https://github.com/Akshay-Anand010/ml-visual-lab.",
+      "source": "ml-visual-lab.md"
+    },
+    {
+      "title": "Who Akshay is",
+      "section": "Profile",
+      "body": "Akshay Anand is a computer science undergrad based in Bengaluru. Exploring new software has been a long-running interest. His public work lives on GitHub under the name Akshay-Anand010. This site is the public page for that work. Questions about private life, contact details, or preferences that are not written in these notes do not have an answer here.",
+      "source": "profile.md"
+    }
+  ]
+}
