@@ -33,7 +33,7 @@ I wrote the notebook. You run it.
 3. Run the cells from top to bottom.
 4. When the login cell asks, sign in to Hugging Face with a write token.
 
-The notebook freezes every original weight of `HuggingFaceTB/SmolLM2-360M-Instruct`. It trains a small adapter on the last 4 blocks and the final output layer, using the notes in this repo. It then uploads the adapter to `Akshay-Anand010/akshay-gpt-adapter`.
+The notebook freezes every original weight of `HuggingFaceTB/SmolLM2-360M-Instruct`. It trains a small adapter on the last 4 blocks and the final output layer, using the notes in this repo. It then uploads the adapter to `Ambitious-Akshay/akshay-gpt-adapter`.
 
 Run the notebook again after the notes change if you want the model to learn the new facts.
 
@@ -50,7 +50,7 @@ python space/publish.py
 3. On the Space settings, leave the hardware on the free CPU.
 4. Wait until the Space build is green. The first question after it sleeps can take about a minute.
 
-The page already calls `https://akshay-anand010-akshay-gpt.hf.space/ask`. That address is in `web/src/config.js`.
+The page calls `https://ambitious-akshay-akshay-gpt.hf.space/ask`. That address is in `web/src/config.js`. The Space is `Ambitious-Akshay/akshay-gpt`, and the adapter is `Ambitious-Akshay/akshay-gpt-adapter`.
 
 ## Preview the page on your laptop
 

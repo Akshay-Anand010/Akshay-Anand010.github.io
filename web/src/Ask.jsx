@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ASK_URL } from "./config.js";
+import { ASK_URL, SPACE_URL } from "./config.js";
 
 const suggestions = [
   "Who is Akshay?",
@@ -69,14 +69,28 @@ export default function Ask({ open, onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: next }),
       });
-      if (!response.ok) throw new Error(String(response.status));
+      if (!response.ok) {
+        const text = await response.text();
+        const paused = response.status === 503 || /paused/i.test(text);
+        const error = new Error(paused ? "paused" : String(response.status));
+        throw error;
+      }
       const payload = await response.json();
       setAside(payload.aside || "");
       setAnswer(payload.answer || "");
       setSource(payload.title ? `${payload.section} · ${payload.title}` : "");
       if (list) renderSources(list, payload);
-    } catch {
-      setAnswer("The model API did not answer. If the Hugging Face Space is not published yet, that step is still left.");
+    } catch (error) {
+      if (error.message === "paused") {
+        setAnswer("The Hugging Face Space is paused, so this page cannot reach the model. Restart it on Hugging Face, then ask again.");
+        if (list) {
+          renderSources(list, {
+            sources: [{ title: "Open the Space and restart it", url: SPACE_URL, snippet: "" }],
+          });
+        }
+      } else {
+        setAnswer("The model API did not answer. The page calls the Ambitious-Akshay Space. If that Space is asleep or still building, wait a minute and try again.");
+      }
     } finally {
       setBusy(false);
     }

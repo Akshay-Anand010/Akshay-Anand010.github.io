@@ -36,7 +36,7 @@ import web_search
 # The public model Colab starts from. The Space downloads this itself.
 BASE_MODEL = "HuggingFaceTB/SmolLM2-360M-Instruct"
 # The adapter notebook push. It does not exist until you run Colab.
-ADAPTER = "Akshay-Anand010/akshay-gpt-adapter"
+ADAPTER = "Ambitious-Akshay/akshay-gpt-adapter"
 # Latest notes on GitHub, so a push can update facts without a new Space build.
 NOTES_URL = (
     "https://raw.githubusercontent.com/Akshay-Anand010/"

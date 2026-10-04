@@ -14,7 +14,7 @@ from pathlib import Path
 
 from huggingface_hub import HfApi
 
-SPACE_ID = "Akshay-Anand010/akshay-gpt"
+SPACE_ID = "Ambitious-Akshay/akshay-gpt"
 FILES = ["app.py", "route.py", "web_search.py", "requirements.txt", "Dockerfile", "README.md", "notes.json"]
 
 
@@ -32,7 +32,7 @@ def main() -> None:
         )
         print(f"uploaded {name}")
     print("Space files are on Hugging Face. The first build can take several minutes.")
-    print("API: https://akshay-anand010-akshay-gpt.hf.space/ask")
+    print("API: https://ambitious-akshay-akshay-gpt.hf.space/ask")
 
 
 if __name__ == "__main__":

@@ -195,7 +195,7 @@ notebook_login()
 """
     ),
     code(
-        """ADAPTER_REPO = "Akshay-Anand010/akshay-gpt-adapter"
+        """ADAPTER_REPO = "Ambitious-Akshay/akshay-gpt-adapter"
 model.push_to_hub(ADAPTER_REPO, private=False)
 tokenizer.push_to_hub(ADAPTER_REPO)
 print("Uploaded. The Space can now load", ADAPTER_REPO)
