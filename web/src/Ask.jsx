@@ -89,7 +89,7 @@ export default function Ask({ open, onClose }) {
           });
         }
       } else {
-        setAnswer("The model API did not answer. The page calls the Ambitious-Akshay Space. If that Space is asleep or still building, wait a minute and try again.");
+        setAnswer("The model is waking up on Modal. The first question after a pause can take a minute. Wait, then ask again.");
       }
     } finally {
       setBusy(false);

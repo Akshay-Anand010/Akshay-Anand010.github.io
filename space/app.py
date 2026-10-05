@@ -112,7 +112,10 @@ def get_model():
         _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
         if _tokenizer.pad_token is None:
             _tokenizer.pad_token = _tokenizer.eos_token
-        base = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.float32)
+        dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+        base = AutoModelForCausalLM.from_pretrained(BASE_MODEL, dtype=dtype)
+        if torch.cuda.is_available():
+            base = base.to("cuda")
         try:
             _model = PeftModel.from_pretrained(base, ADAPTER)
             _adapter_on = True
@@ -138,6 +141,7 @@ def complete(messages: list[dict], limit: int) -> str:
         return_tensors="pt",
     )
     input_ids = encoded["input_ids"] if hasattr(encoded, "keys") else encoded
+    input_ids = input_ids.to(next(model.parameters()).device)
     with torch.no_grad():
         output = model.generate(
             input_ids=input_ids,
@@ -149,11 +153,21 @@ def complete(messages: list[dict], limit: int) -> str:
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
+def repeats_itself(text: str) -> bool:
+    """A stuck model repeats one word. That is not an answer."""
+    words = [word.lower() for word in text.split() if word]
+    if len(words) < 8:
+        return False
+    most = max(words.count(word) for word in set(words))
+    return most >= 6
+
+
 def generate(system_prompt: str, note: dict, question: str) -> str:
     """Ask the adapted model to answer from one note.
 
     Without the adapter, return the note itself. The base model has never
-    been trained on these facts and would invent them.
+    been trained on these facts and would invent them. A reply that repeats
+    one word is treated the same way.
     """
     if not _adapter_on:
         get_model()
@@ -167,7 +181,9 @@ def generate(system_prompt: str, note: dict, question: str) -> str:
         ],
         limit=180,
     )
-    return text or note["body"]
+    if not text or repeats_itself(text):
+        return note["body"]
+    return text
 
 
 def draft_general(question: str) -> str:
