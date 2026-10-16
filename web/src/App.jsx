@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
 import Ask from "./Ask.jsx";
 import { projects, roles, study } from "./content.js";
+import { formatDate, posts } from "./posts.js";
 
 const tabs = [
   { id: "home", label: "Home" },
   { id: "work", label: "Work" },
   { id: "life", label: "Life" },
+  { id: "blog", label: "Blog" },
 ];
 
-function readTab() {
-  const hash = window.location.hash.replace("#", "");
-  return tabs.some((tab) => tab.id === hash) ? hash : "home";
+function readRoute() {
+  const hash = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+  if (hash.startsWith("blog/")) return { tab: "blog", slug: hash.slice(5) };
+  if (tabs.some((item) => item.id === hash)) return { tab: hash, slug: "" };
+  return { tab: "home", slug: "" };
 }
 
 export default function App() {
-  const [tab, setTab] = useState(readTab);
+  const [route, setRoute] = useState(readRoute);
   const [askOpen, setAskOpen] = useState(false);
+  const { tab, slug } = route;
 
   useEffect(() => {
-    const onHash = () => setTab(readTab());
+    const onHash = () => setRoute(readRoute());
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
@@ -36,15 +41,22 @@ export default function App() {
 
   function go(id) {
     window.location.hash = id === "home" ? "" : id;
-    setTab(id);
+    setRoute({ tab: id, slug: "" });
   }
 
   return (
     <div className="page">
       <header className="nav">
-        <a className="brand" href="#home" onClick={() => go("home")}>
-          Akshay Anand
-        </a>
+        <div className="who">
+          <a className="brand" href="#home" onClick={() => go("home")}>
+            Akshay Anand
+          </a>
+          <p className="tag">Software engineer in Bengaluru. From Patna.</p>
+          <span className="links">
+            <a href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/akshay1998/" target="_blank" rel="noreferrer">LinkedIn</a>
+          </span>
+        </div>
         <nav>
           {tabs.map((item) => (
             <a
@@ -59,19 +71,19 @@ export default function App() {
               {item.label}
             </a>
           ))}
+          <button type="button" className="ask-launch" onClick={() => setAskOpen(true)}>
+            ask
+          </button>
         </nav>
-        <button type="button" className="ask-launch" onClick={() => setAskOpen(true)}>
-          Akshay GPT
-        </button>
       </header>
 
-      {tab === "home" && <Home onWork={() => go("work")} />}
+      {tab === "home" && <Home />}
       {tab === "work" && <Work />}
       {tab === "life" && <Life />}
+      {tab === "blog" && <Blog slug={slug} />}
 
       <footer className="foot">
-        <span>Press / to ask.</span>
-        <a href="https://github.com/Akshay-Anand010">GitHub</a>
+        <span><kbd>/</kbd> to ask</span>
       </footer>
 
       <Ask open={askOpen} onClose={() => setAskOpen(false)} />
@@ -79,45 +91,58 @@ export default function App() {
   );
 }
 
-function Home({ onWork }) {
+function Home() {
   return (
     <main>
       <section className="hero">
-        <p className="kicker">Software engineer · Bengaluru</p>
         <h1>
-          I build systems,
-          <span> and I like seeing how far they can think.</span>
+          I build systems, and I like seeing how far they can <em>think</em>.
         </h1>
         <p className="lede">
-          Backend engineering, design for scale, and the point where AI starts to help
-          those systems. From Patna. Chess, volleyball, and a habit of going places.
-          The job history is a record, not the headline.
+          Services, scale, and the moment AI starts to help them.
+          Chess, volleyball, and the next city after that.
         </p>
-        <button type="button" className="linkish" onClick={onWork}>
-          Career sits on its own tab
-        </button>
       </section>
 
       <section className="trio">
         <article>
           <p>01</p>
-          <h2>Scale</h2>
-          <p>Services, load, caching, and the design decisions underneath them.</p>
+          <div>
+            <h2>Scale</h2>
+            <p>Services, load, caching, and the design decisions underneath them.</p>
+          </div>
         </article>
         <article>
           <p>02</p>
-          <h2>AI, where it meets the system</h2>
-          <p>Load prediction and smarter architecture, not a model dropped on top of a diagram.</p>
+          <div>
+            <h2>AI, where it meets the system</h2>
+            <p>Load prediction and smarter architecture, not a model dropped on top of a diagram.</p>
+          </div>
         </article>
         <article>
           <p>03</p>
-          <h2>The rest of the week</h2>
-          <p>Chess, volleyball, Kerala, Coorg, Ooty, and whatever city is next.</p>
+          <div>
+            <h2>The rest of the week</h2>
+            <p>Chess, volleyball, Kerala, Coorg, Ooty, and whatever city is next.</p>
+          </div>
         </article>
       </section>
 
+      {posts.length > 0 && (
+        <section className="writing">
+          <div className="section-head">
+            <h2>Writing</h2>
+            <a href="#blog">all</a>
+          </div>
+          <PostList items={posts.slice(0, 3)} />
+        </section>
+      )}
+
       <section className="projects">
-        <h2>Built in public</h2>
+        <div className="section-head">
+          <h2>Built in public</h2>
+          <span>04</span>
+        </div>
         {projects.map((project, index) => (
           <a key={project.title} className="project" href={project.href}>
             <span>{String(index + 1).padStart(2, "0")}</span>
@@ -136,11 +161,10 @@ function Home({ onWork }) {
 function Work() {
   return (
     <main className="sheet">
-      <p className="kicker">A record, not a personality</p>
+      <p className="kicker">Bengaluru and before</p>
       <h1 className="sheet-title">Work</h1>
       <p className="lede">
-        Engineer and software developer. These are the places that work has happened.
-        None of them is the whole story.
+        The places the engineering has happened, from internships to the current chapter.
       </p>
       <ol className="timeline">
         {roles.map((role) => (
@@ -164,10 +188,60 @@ function Work() {
   );
 }
 
+function PostList({ items }) {
+  return (
+    <div className="post-list">
+      {items.map((post) => (
+        <a key={post.slug} href={`#blog/${post.slug}`}>
+          <span>{post.title}</span>
+          <time>{formatDate(post.date)}</time>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function Blog({ slug }) {
+  const post = posts.find((item) => item.slug === slug);
+  if (post) {
+    return (
+      <main className="sheet">
+        <a className="back" href="#blog">Blog</a>
+        <h1 className="sheet-title">{post.title}</h1>
+        {post.date && <p className="dateline">{formatDate(post.date)}</p>}
+        <article className="prose" dangerouslySetInnerHTML={{ __html: post.html }} />
+      </main>
+    );
+  }
+
+  return (
+    <main className="sheet">
+      <p className="kicker">Notes</p>
+      <h1 className="sheet-title">Blog</h1>
+      {posts.length > 0 ? (
+        <PostList items={posts} />
+      ) : (
+        <div className="empty">
+          <p>Nothing published yet. A post is a markdown file.</p>
+          <pre>{`web/posts/hello.md
+
+---
+title: Hello
+date: 2026-10-17
+summary: One line for the list.
+---
+
+Write the post here.`}</pre>
+        </div>
+      )}
+    </main>
+  );
+}
+
 function Life() {
   return (
     <main className="sheet">
-      <p className="kicker">Off the clock</p>
+      <p className="kicker">Away from the keyboard</p>
       <h1 className="sheet-title">Life</h1>
       <div className="life-grid">
         <article>
