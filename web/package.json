@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "posts": "node fetch-posts.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

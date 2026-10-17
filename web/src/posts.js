@@ -122,7 +122,8 @@ function parse(raw, path) {
     title: meta.title || slug,
     date: meta.date || "",
     summary: summary.replace(/^#+\s*/, ""),
-    html: renderMarkdown(body),
+    source: meta.source || "",
+    html: meta.format === "html" ? body : renderMarkdown(body),
   };
 }
 

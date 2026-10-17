@@ -47,16 +47,9 @@ export default function App() {
   return (
     <div className="page">
       <header className="nav">
-        <div className="who">
-          <a className="brand" href="#home" onClick={() => go("home")}>
-            Akshay Anand
-          </a>
-          <p className="tag">Software engineer in Bengaluru. From Patna.</p>
-          <span className="links">
-            <a href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">GitHub</a>
-            <a href="https://www.linkedin.com/in/akshay1998/" target="_blank" rel="noreferrer">LinkedIn</a>
-          </span>
-        </div>
+        <a className="brand" href="#home" onClick={() => go("home")}>
+          Akshay Anand
+        </a>
         <nav>
           {tabs.map((item) => (
             <a
@@ -71,13 +64,17 @@ export default function App() {
               {item.label}
             </a>
           ))}
-          <button type="button" className="ask-launch" onClick={() => setAskOpen(true)}>
-            ask
-          </button>
         </nav>
+        <div className="nav-end">
+          <a href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/akshay1998/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <button type="button" className="ask-launch" onClick={() => setAskOpen(true)}>
+            Ask
+          </button>
+        </div>
       </header>
 
-      {tab === "home" && <Home />}
+      {tab === "home" && <Home onAsk={() => setAskOpen(true)} />}
       {tab === "work" && <Work />}
       {tab === "life" && <Life />}
       {tab === "blog" && <Blog slug={slug} />}
@@ -91,42 +88,72 @@ export default function App() {
   );
 }
 
-function Home() {
+function Home({ onAsk }) {
   return (
     <main>
-      <section className="hero">
-        <h1>
-          I build systems, and I like seeing how far they can <em>think</em>.
-        </h1>
-        <p className="lede">
-          Services, scale, and the moment AI starts to help them.
-          Chess, volleyball, and the next city after that.
-        </p>
-      </section>
-
-      <section className="trio">
-        <article>
-          <p>01</p>
-          <div>
-            <h2>Scale</h2>
-            <p>Services, load, caching, and the design decisions underneath them.</p>
+      <div className="stage">
+        <div className="stage-tabs">
+          <span>Akshay</span>
+          <span>Systems</span>
+          <span>Scale</span>
+          <span>Bengaluru</span>
+        </div>
+        <section className="hero">
+          <div className="hero-copy">
+            <p className="comment">// software engineer in bengaluru. from patna.</p>
+            <h1>
+              I build<br />systems that<br /><em>think</em><span className="caret" />
+            </h1>
+            <p className="lede">
+              Services, scale, and the moment AI starts to help them.
+              Chess, volleyball, and the next city after that.
+            </p>
+            <div className="actions">
+              <button type="button" className="gold" onClick={onAsk}>Ask</button>
+              <a className="ghost" href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">GitHub →</a>
+            </div>
           </div>
+          <dl className="metrics">
+            <div>
+              <dt>From</dt>
+              <dd><span className="flap">Patna</span></dd>
+              <p>Bihar</p>
+            </div>
+            <div>
+              <dt>Now</dt>
+              <dd className="hot"><span className="flap">BLR</span></dd>
+              <p>Bengaluru</p>
+            </div>
+            <div>
+              <dt>Plays</dt>
+              <dd><span className="flap">Chess</span></dd>
+              <p>and volleyball</p>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd className="hot"><span className="flap">Scale</span></dd>
+              <p>load, cache, design</p>
+            </div>
+          </dl>
+        </section>
+        <section className="trio">
+        <article>
+          <p>Systems</p>
+          <h2>Scale</h2>
+          <p>Services, load, caching, and the design decisions underneath them.</p>
         </article>
         <article>
-          <p>02</p>
-          <div>
-            <h2>AI, where it meets the system</h2>
-            <p>Load prediction and smarter architecture, not a model dropped on top of a diagram.</p>
-          </div>
+          <p>Models</p>
+          <h2>Where AI meets the system</h2>
+          <p>Load prediction and smarter architecture, not a model dropped on top of a diagram.</p>
         </article>
         <article>
-          <p>03</p>
-          <div>
-            <h2>The rest of the week</h2>
-            <p>Chess, volleyball, Kerala, Coorg, Ooty, and whatever city is next.</p>
-          </div>
+          <p>Off hours</p>
+          <h2>The rest of the week</h2>
+          <p>Chess, volleyball, Kerala, Coorg, Ooty, and whatever city is next.</p>
         </article>
-      </section>
+        </section>
+      </div>
 
       {posts.length > 0 && (
         <section className="writing">
@@ -141,18 +168,19 @@ function Home() {
       <section className="projects">
         <div className="section-head">
           <h2>Built in public</h2>
-          <span>04</span>
         </div>
-        {projects.map((project, index) => (
-          <a key={project.title} className="project" href={project.href}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <span>
-              <h3>{project.title}</h3>
-              <p>{project.text}</p>
-            </span>
-            <span className="arrow">↗</span>
-          </a>
-        ))}
+        <div className="project-board">
+          {projects.map((project, index) => (
+            <a key={project.title} className="project" href={project.href}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <span>
+                <h3>{project.title}</h3>
+                <p>{project.text}</p>
+              </span>
+              <span className="arrow">→</span>
+            </a>
+          ))}
+        </div>
       </section>
     </main>
   );
@@ -208,7 +236,12 @@ function Blog({ slug }) {
       <main className="sheet">
         <a className="back" href="#blog">Blog</a>
         <h1 className="sheet-title">{post.title}</h1>
-        {post.date && <p className="dateline">{formatDate(post.date)}</p>}
+        <p className="dateline">
+          {post.date && <span>{formatDate(post.date)}</span>}
+          {post.source && (
+            <a href={post.source} target="_blank" rel="noreferrer">Medium</a>
+          )}
+        </p>
         <article className="prose" dangerouslySetInnerHTML={{ __html: post.html }} />
       </main>
     );
@@ -219,7 +252,9 @@ function Blog({ slug }) {
       <p className="kicker">Notes</p>
       <h1 className="sheet-title">Blog</h1>
       {posts.length > 0 ? (
-        <PostList items={posts} />
+        <div className="project-board post-board">
+          <PostList items={posts} />
+        </div>
       ) : (
         <div className="empty">
           <p>Nothing published yet. A post is a markdown file.</p>
