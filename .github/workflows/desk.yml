@@ -1,0 +1,46 @@
+name: Publish desk posts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/sources.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Import posts and build
+        working-directory: web
+        run: |
+          npm ci
+          node fetch-posts.mjs
+          npm run build
+      - name: Copy the built site to the repository root
+        run: |
+          rm -f assets/index-*.js assets/index-*.css
+          cp docs/index.html docs/favicon.svg ./
+          mkdir -p assets
+          cp docs/assets/* assets/
+          rm -rf desk
+          cp -R docs/desk desk
+      - name: Commit the published site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No site changes."
+          else
+            git commit -m "Publish posts added from the desk."
+            git push
+          fi

@@ -193,5 +193,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const result = await importSources();
   for (const post of result.written) console.log(post.file);
   for (const error of result.errors) console.error(`${error.link}\n  ${error.message}`);
-  if (result.errors.length) process.exitCode = 1;
+  if (!result.written.length && result.errors.length) process.exitCode = 1;
 }

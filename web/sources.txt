@@ -1,4 +1,4 @@
 # One link per line. A story, or a whole Medium / Hashnode profile.
-# The local desk at http://127.0.0.1:5173/desk writes this file for you.
+# https://akshay-anand010.github.io/desk writes this file.
 
 https://medium.com/@akshayanand771/a-better-way-to-handle-concurrency-with-reentrantlock-dcfeb14f737f

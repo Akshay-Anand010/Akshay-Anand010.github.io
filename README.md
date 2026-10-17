@@ -4,17 +4,10 @@ The page people visit is https://akshay-anand010.github.io.
 
 ## Add a blog post
 
-The desk runs only on your laptop.
+Open https://akshay-anand010.github.io/desk
 
-```bash
-cd web
-npm install
-npm run dev
-```
+Paste a Medium or Hashnode link. The first time, the page asks for a GitHub token that can edit this repository. That token stays in the browser. GitHub then pulls the story and publishes it on the blog.
 
-Open http://127.0.0.1:5173/desk
-
-Paste a Medium or Hashnode link. The desk saves it in `web/sources.txt` and pulls the story into `web/posts/`. Rebuild and push when you want that post on the live site.
 The model does not run on that page. A question takes this path:
 
 1. A visitor opens the site and uses Akshay GPT.
