@@ -11,4 +11,12 @@ export default defineConfig({
     outDir: "../docs",
     emptyOutDir: true,
   },
+  server: {
+    proxy: {
+      "/ask": {
+        target: "https://akshayanand771--akshay-gpt-web.modal.run",
+        changeOrigin: true,
+      },
+    },
+  },
 });

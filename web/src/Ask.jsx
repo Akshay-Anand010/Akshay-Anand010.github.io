@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ASK_URL, SPACE_URL } from "./config.js";
 
 const suggestions = [
@@ -34,15 +34,38 @@ function renderSources(node, payload) {
   }
 }
 
+const WAKE_LIMIT = 90000;
+const RETRY_GAP = 2500;
+
+function pause(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    const stop = () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    if (signal?.aborted) stop();
+    else signal?.addEventListener("abort", stop, { once: true });
+  });
+}
+
+function coldStart(status) {
+  return status === 408 || status === 502 || status === 503 || status === 504;
+}
+
 export default function Ask({ open, onClose }) {
   const [question, setQuestion] = useState("");
   const [aside, setAside] = useState("");
   const [answer, setAnswer] = useState("");
   const [source, setSource] = useState("");
   const [busy, setBusy] = useState(false);
+  const flight = useRef(null);
 
   useEffect(() => {
-    if (!open) return undefined;
+    if (!open) {
+      flight.current?.abort();
+      return undefined;
+    }
     const onKey = (event) => {
       if (event.key === "Escape") onClose();
     };
@@ -54,7 +77,10 @@ export default function Ask({ open, onClose }) {
 
   async function submit(text) {
     const next = (text ?? question).trim();
-    if (!next) return;
+    if (!next || busy) return;
+    flight.current?.abort();
+    const controller = new AbortController();
+    flight.current = controller;
     setQuestion(next);
     setBusy(true);
     setAside("");
@@ -62,37 +88,59 @@ export default function Ask({ open, onClose }) {
     setSource("");
     const list = document.querySelector("#sources");
     if (list) list.replaceChildren();
+    const started = Date.now();
 
     try {
-      const response = await fetch(ASK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: next }),
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        const paused = response.status === 503 || /paused/i.test(text);
-        const error = new Error(paused ? "paused" : String(response.status));
-        throw error;
-      }
-      const payload = await response.json();
-      setAside(payload.aside || "");
-      setAnswer(payload.answer || "");
-      setSource(payload.title ? `${payload.section} · ${payload.title}` : "");
-      if (list) renderSources(list, payload);
-    } catch (error) {
-      if (error.message === "paused") {
-        setAnswer("The Hugging Face Space is paused, so this page cannot reach the model. Restart it on Hugging Face, then ask again.");
-        if (list) {
-          renderSources(list, {
-            sources: [{ title: "Open the Space and restart it", url: SPACE_URL, snippet: "" }],
+      while (!controller.signal.aborted) {
+        const slow = setTimeout(() => {
+          setAnswer("Waking the model. The first question after a pause can take about a minute.");
+        }, 8000);
+        try {
+          const response = await fetch(ASK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: next }),
+            signal: controller.signal,
           });
+          clearTimeout(slow);
+          if (controller.signal.aborted) return;
+          if (response.ok) {
+            const payload = await response.json();
+            setAside(payload.aside || "");
+            setAnswer(payload.answer || "");
+            setSource(payload.title ? `${payload.section} · ${payload.title}` : "");
+            if (list) renderSources(list, payload);
+            return;
+          }
+          const body = await response.text();
+          if (/paused/i.test(body)) {
+            setAnswer("The Hugging Face Space is paused, so this page cannot reach the model. Restart it on Hugging Face, then ask again.");
+            if (list) {
+              renderSources(list, {
+                sources: [{ title: "Open the Space and restart it", url: SPACE_URL, snippet: "" }],
+              });
+            }
+            return;
+          }
+          if (!coldStart(response.status) || Date.now() - started > WAKE_LIMIT) break;
+        } catch (error) {
+          clearTimeout(slow);
+          if (error.name === "AbortError" || controller.signal.aborted) return;
+          if (Date.now() - started > WAKE_LIMIT) break;
         }
-      } else {
-        setAnswer("The model is waking up on Modal. The first question after a pause can take a minute. Wait, then ask again.");
+        setAnswer("Waking the model. The first question after a pause can take about a minute.");
+        try {
+          await pause(RETRY_GAP, controller.signal);
+        } catch (error) {
+          if (error.name === "AbortError") return;
+          throw error;
+        }
+      }
+      if (!controller.signal.aborted) {
+        setAnswer("The model is still waking up. Ask once more.");
       }
     } finally {
-      setBusy(false);
+      if (flight.current === controller) setBusy(false);
     }
   }
 
@@ -124,12 +172,12 @@ export default function Ask({ open, onClose }) {
             autoFocus
           />
           <button type="submit" disabled={busy}>
-            Ask
+            {busy ? "Waiting" : "Ask"}
           </button>
         </form>
         <div className="chips">
           {suggestions.map((item) => (
-            <button key={item} type="button" className="chip" onClick={() => submit(item)}>
+            <button key={item} type="button" className="chip" disabled={busy} onClick={() => submit(item)}>
               {item}
             </button>
           ))}

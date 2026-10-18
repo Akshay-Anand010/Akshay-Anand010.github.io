@@ -58,6 +58,8 @@ ALLOWED_ORIGINS = [
     "https://akshay-anand010.github.io",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 # Filled on the first question so the Space can boot without the model.
