@@ -1,7 +1,7 @@
 ---
 title: "A Better Way to Handle Concurrency with ReentrantLock in Java"
 date: 2025-06-08
-summary: "Concurrency issues can sneak into your application even in the most routine flows. Recently, I tackled a bug where multiple requests to update user"
+summary: "Two requests were creating duplicate profile rows. A lock per user stopped the race."
 source: https://medium.com/@akshayanand771/a-better-way-to-handle-concurrency-with-reentrantlock-dcfeb14f737f
 format: html
 ---

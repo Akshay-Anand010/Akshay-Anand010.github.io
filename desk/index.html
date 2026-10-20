@@ -12,18 +12,19 @@
     :root { color-scheme: light; }
     body {
       margin: 0;
-      background: #f3f4f6;
+      background-color: #e8e8e8;
       background-image:
-        linear-gradient(to right, rgba(17,17,17,.045) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(17,17,17,.045) 1px, transparent 1px);
-      background-size: 32px 32px;
-      color: #111;
+        linear-gradient(to right, rgba(30,30,30,.028) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30,30,30,.028) 1px, transparent 1px),
+        linear-gradient(20deg, #f1f1f9, #f9f1f1, #f1f9f1);
+      background-size: 32px 32px, 32px 32px, auto;
+      color: #1e1e1e;
       font-family: "Inter Tight", sans-serif;
     }
     main { width: min(720px, calc(100% - 2rem)); margin: 3rem auto 4rem; }
     a { color: inherit; }
     h1 { margin: 0 0 .4rem; font-size: 2.4rem; letter-spacing: -.04em; }
-    p { color: #6b7280; }
+    p { color: #5e5e5e; }
     form, .list, .status, .token {
       background: #fff;
       border: 1px solid #e6e7eb;
@@ -38,11 +39,11 @@
       outline: none;
       min-width: 0;
     }
-    input:focus { border-color: #111; }
+    input:focus { border-color: #1e1e1e; }
     button, .text {
       border: 0;
-      background: #f5c518;
-      color: #111;
+      background: #1e1e1e;
+      color: #fff;
       padding: .7rem 1rem;
       font: inherit;
       font-weight: 600;
@@ -54,8 +55,8 @@
     .token label { display: block; margin-bottom: .4rem; font-size: .92rem; }
     .list { margin-top: 1rem; }
     li { padding: .7rem 0; border-top: 1px solid #e6e7eb; overflow-wrap: anywhere; }
-    .status { margin-top: 1rem; color: #6b7280; font-family: "JetBrains Mono", monospace; font-size: .78rem; }
-    .bad { color: #e8590c; }
+    .status { margin-top: 1rem; color: #5e5e5e; font-family: "JetBrains Mono", monospace; font-size: .78rem; }
+    .bad { color: #1e1e1e; }
     .row { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
   </style>
 </head>

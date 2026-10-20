@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Ask from "./Ask.jsx";
+import Figure from "./Figure.jsx";
 import { projects, roles, study } from "./content.js";
 import { formatDate, posts } from "./posts.js";
 
 const tabs = [
-  { id: "home", label: "Home" },
-  { id: "work", label: "Work" },
-  { id: "life", label: "Life" },
-  { id: "blog", label: "Blog" },
+  { id: "home", label: "Home", key: "H" },
+  { id: "work", label: "Work", key: "W" },
+  { id: "life", label: "Life", key: "L" },
+  { id: "blog", label: "Blog", key: "B" },
 ];
 
 function readRoute() {
   const hash = decodeURIComponent(window.location.hash.replace(/^#/, ""));
   if (hash.startsWith("blog/")) return { tab: "blog", slug: hash.slice(5) };
-  if (tabs.some((item) => item.id === hash)) return { tab: hash, slug: "" };
+  if (hash === "home" || tabs.some((item) => item.id === hash)) {
+    return { tab: hash === "home" ? "home" : hash, slug: "" };
+  }
   return { tab: "home", slug: "" };
 }
 
@@ -28,21 +31,36 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const go = useCallback((id) => {
+    window.location.hash = id === "home" ? "home" : id;
+    setRoute({ tab: id, slug: "" });
+  }, []);
+
   useEffect(() => {
     const onKey = (event) => {
-      if (event.key === "/" && document.activeElement.tagName !== "INPUT") {
+      if (event.metaKey || event.ctrlKey || event.altKey || event.repeat) return;
+      const el = document.activeElement;
+      const typing = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+      if (typing) return;
+      const key = event.key.length === 1 ? event.key.toUpperCase() : "";
+      if (key === "/") {
         event.preventDefault();
         setAskOpen(true);
+        return;
       }
+      if (key === "G") {
+        event.preventDefault();
+        window.open("https://github.com/Akshay-Anand010", "_blank", "noopener,noreferrer");
+        return;
+      }
+      const next = tabs.find((item) => item.key === key);
+      if (!next) return;
+      event.preventDefault();
+      go(next.id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  function go(id) {
-    window.location.hash = id === "home" ? "" : id;
-    setRoute({ tab: id, slug: "" });
-  }
+  }, [go]);
 
   return (
     <div className="page">
@@ -61,15 +79,18 @@ export default function App() {
                 go(item.id);
               }}
             >
+              <span className="key">[ {item.key} ]</span>
               {item.label}
             </a>
           ))}
         </nav>
         <div className="nav-end">
-          <a href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://github.com/Akshay-Anand010" target="_blank" rel="noreferrer">
+            <span className="key">[ G ]</span>GitHub
+          </a>
           <a href="https://www.linkedin.com/in/akshay1998/" target="_blank" rel="noreferrer">LinkedIn</a>
           <button type="button" className="ask-launch" onClick={() => setAskOpen(true)}>
-            Ask
+            <span className="key">[ / ]</span>Ask
           </button>
         </div>
       </header>
@@ -92,6 +113,10 @@ function Home({ onAsk }) {
   return (
     <main>
       <div className="stage">
+        <span className="crop tl" aria-hidden="true" />
+        <span className="crop tr" aria-hidden="true" />
+        <span className="crop bl" aria-hidden="true" />
+        <span className="crop br" aria-hidden="true" />
         <div className="stage-tabs">
           <span>Akshay</span>
           <span>Systems</span>
@@ -153,24 +178,56 @@ function Home({ onAsk }) {
           <p>Chess, volleyball, Kerala, Coorg, Ooty, and whatever city is next.</p>
         </article>
         </section>
-      </div>
-
-      {posts.length > 0 && (
-        <section className="writing">
-          <div className="section-head">
-            <h2>Writing</h2>
-            <a href="#blog">all</a>
+        <section className="featured">
+        {posts[0] && (
+          <article className="feature">
+            <p className="slash">/ Featured post</p>
+            <div className="feature-body">
+              <div className="win" aria-hidden="true">
+                <div className="win-bar">
+                  <span className="dots"><i /><i /><i /></span>
+                  <span>Fig. 1</span>
+                </div>
+                <Figure variant="rings" />
+              </div>
+              <div>
+                <h2>
+                  <a href={`#blog/${posts[0].slug}`}>{posts[0].title}</a>
+                </h2>
+                <p>{posts[0].summary}</p>
+                <span className="kind">Blog</span>
+              </div>
+            </div>
+          </article>
+        )}
+        <article className="feature">
+          <p className="slash">/ Featured project</p>
+          <div className="feature-body">
+            <div className="win" aria-hidden="true">
+              <div className="win-bar">
+                <span className="dots"><i /><i /><i /></span>
+                <span>Fig. 2</span>
+              </div>
+              <Figure variant="field" />
+            </div>
+            <div>
+              <h2>
+                <a href={projects[0].href} target="_blank" rel="noreferrer">{projects[0].title}</a>
+              </h2>
+              <p>{projects[0].text}</p>
+              <span className="kind">Lab</span>
+            </div>
           </div>
-          <PostList items={posts.slice(0, 3)} />
+        </article>
         </section>
-      )}
+      </div>
 
       <section className="projects">
         <div className="section-head">
-          <h2>Built in public</h2>
+          <p className="slash">/ Built</p>
         </div>
         <div className="project-board">
-          {projects.map((project, index) => (
+          {projects.slice(1).map((project, index) => (
             <a key={project.title} className="project" href={project.href}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <span>
@@ -194,15 +251,16 @@ function Work() {
       <p className="lede">
         The places the engineering has happened, from internships to the current chapter.
       </p>
-      <ol className="timeline">
+      <ol className="ledger">
         {roles.map((role) => (
           <li key={role.place}>
-            <p className="when">{role.when}</p>
+            <p className="stamp">{role.stamp}</p>
             <div>
               <h2>{role.place}</h2>
               <p className="role">{role.title}</p>
               <p>{role.text}</p>
             </div>
+            <span className={role.chip === "Now" ? "kind now" : "kind"}>{role.chip}</span>
           </li>
         ))}
       </ol>

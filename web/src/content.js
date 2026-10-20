@@ -24,24 +24,32 @@ export const projects = [
 export const roles = [
   {
     when: "2025 — now",
+    stamp: "2025.11",
+    chip: "Now",
     place: "Visa",
     title: "Senior Software Engineer",
     text: "Bengaluru. Security and identity: OAuth, OpenID Connect, authentication, and authorization. One current chapter.",
   },
   {
     when: "2024 — 2025",
+    stamp: "2024.04",
+    chip: "Work",
     place: "Thoughtworks",
     title: "Developer",
-    text: "Purchase availability for John Deere. Cart, promotions, Kafka, and caching that cut database load.",
+    text: "Purchase availability for John Deere. Cart, promotions, Kafka, and a cache that cut database load by about 40%.",
   },
   {
     when: "2021 — 2024",
+    stamp: "2021.09",
+    chip: "Work",
     place: "Manhattan Associates",
     title: "Software Engineer",
     text: "Order management. Payments across PayPal, Cybersource, and Aurus. Java services around the order lifecycle.",
   },
   {
     when: "2020 — 2021",
+    stamp: "2020",
+    chip: "Intern",
     place: "Internships",
     title: "Infoblox, Kavach, Exposys",
     text: "Salesforce and web development, before the full-time engineering years.",
